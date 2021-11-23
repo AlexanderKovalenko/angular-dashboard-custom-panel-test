@@ -1,0 +1,27 @@
+<div style="display: flex; height: 100%">
+  <div style="width: 300px;">
+    <dx-data-grid 
+        [dataSource]="store" 
+        [remoteOperations]="true" 
+        [showBorders]="true"
+        [focusedRowEnabled]="true"
+        [(focusedRowKey)]="dashboardId">
+      <dxo-paging [pageSize]="10"> </dxo-paging>
+      <dxo-search-panel [visible]="true"></dxo-search-panel>
+      <dxi-column dataField="productID" [width]="50" caption="ID" dataType="string"></dxi-column>
+      <dxi-column dataField="productName" caption="Name"></dxi-column>
+    </dx-data-grid>
+  </div>
+  <div style="flex-grow: 1;">
+    <dx-dashboard-control
+        style="display: block;width:100%;height:600px;" 
+        [endpoint]="serverUrl + '/api/dashboard'"
+        [(dashboardId)]="dashboardId">
+    </dx-dashboard-control>
+  </div>
+</div>
+
+
+
+
+
