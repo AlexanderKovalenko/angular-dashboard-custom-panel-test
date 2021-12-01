@@ -8,9 +8,9 @@ import CustomStore from 'devextreme/data/custom_store';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  serverUrl:string = "https://localhost:44396";
+  serverUrl: string = "https://localhost:44396";
   store: CustomStore;
-  dashboardId: string = "1";
+  dashboardId: string = "";
 
   constructor() {
     this.store = createStore({
@@ -18,4 +18,9 @@ export class AppComponent {
         loadUrl: this.serverUrl + "/dashboardpanel/dashboards"
     });
   }
+
+  onFocusedRowChanged(e: any) {
+    if (e.row && e.row.key)
+      this.dashboardId = e.row.key.toString();
+  }  
 }

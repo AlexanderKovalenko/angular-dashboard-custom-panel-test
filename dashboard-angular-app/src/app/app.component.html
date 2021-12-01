@@ -5,10 +5,10 @@
         [remoteOperations]="true" 
         [showBorders]="true"
         [focusedRowEnabled]="true"
-        [(focusedRowKey)]="dashboardId">
-      <dxo-paging [pageSize]="10"> </dxo-paging>
-      <dxo-search-panel [visible]="true"></dxo-search-panel>
-      <dxi-column dataField="productID" [width]="50" caption="ID" dataType="string"></dxi-column>
+        (onFocusedRowChanged)="onFocusedRowChanged($event)">
+      <dxo-paging [pageSize]="10"></dxo-paging>
+      <dxo-filter-row [visible]="true"></dxo-filter-row>
+      <dxi-column dataField="productID" caption="ID" [width]="55"></dxi-column>
       <dxi-column dataField="productName" caption="Name"></dxi-column>
     </dx-data-grid>
   </div>
@@ -20,8 +20,3 @@
     </dx-dashboard-control>
   </div>
 </div>
-
-
-
-
-

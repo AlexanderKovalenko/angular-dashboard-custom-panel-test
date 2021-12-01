@@ -1,3 +1,4 @@
+using System;
 using DevExpress.AspNetCore;
 using DevExpress.DashboardAspNetCore;
 using DevExpress.DashboardCommon;
@@ -9,13 +10,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
-using System;
 
 namespace AspNetCoreDashboardBackend {
     public class Startup {
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-
         public Startup(IConfiguration configuration, IWebHostEnvironment hostingEnvironment) {
             Configuration = configuration;
             FileProvider = hostingEnvironment.ContentRootFileProvider;
@@ -36,7 +35,8 @@ namespace AspNetCoreDashboardBackend {
                     });
                 })
                 .AddDevExpressControls()
-                .AddControllers();
+                .AddControllersWithViews();
+
             services.AddScoped<DashboardConfigurator>((IServiceProvider serviceProvider) => {
                 DashboardConfigurator configurator = new DashboardConfigurator();
 
@@ -46,6 +46,7 @@ namespace AspNetCoreDashboardBackend {
                 configurator.SetDataSourceStorage(CreateDataSourceStorage());
                 configurator.SetConnectionStringsProvider(new DashboardConnectionStringsProvider(Configuration));
                 configurator.ConfigureDataConnection += Configurator_ConfigureDataConnection;
+                
                 return configurator;
             });
 
@@ -63,6 +64,8 @@ namespace AspNetCoreDashboardBackend {
             app.UseRouting();
             app.UseCors("CorsPolicy");
             app.UseEndpoints(endpoints => {
+                // Maps the default controller/action to display the service info view.
+                endpoints.MapDefaultControllerRoute();
                 // Maps the dashboard route.
                 EndpointRouteBuilderExtension.MapDashboardRoute(endpoints, "api/dashboard", "DefaultDashboard");
                 // Requires CORS policies.
@@ -77,20 +80,12 @@ namespace AspNetCoreDashboardBackend {
             jsonDataSourceSupport.RootElement = "Employee";
             dataSourceStorage.RegisterDataSource("jsonDataSourceSupport", jsonDataSourceSupport.SaveToXml());
 
-            DashboardJsonDataSource jsonDataSourceCategories = new DashboardJsonDataSource("Categories");
-            jsonDataSourceCategories.RootElement = "Products";
-            dataSourceStorage.RegisterDataSource("jsonDataSourceCategories", jsonDataSourceCategories.SaveToXml());
             return dataSourceStorage;
         }
+
         private void Configurator_ConfigureDataConnection(object sender, ConfigureDataConnectionWebEventArgs e) {
             if (e.DataSourceName.Contains("Support")) {
-                Uri fileUri = new Uri(FileProvider.GetFileInfo("App_data/Support.json").PhysicalPath, UriKind.RelativeOrAbsolute);
-                JsonSourceConnectionParameters jsonParams = new JsonSourceConnectionParameters();
-                jsonParams.JsonSource = new UriJsonSource(fileUri);
-                e.ConnectionParameters = jsonParams;
-            }
-            if (e.DataSourceName.Contains("Categories")) {
-                Uri fileUri = new Uri(FileProvider.GetFileInfo("App_data/Categories.json").PhysicalPath, UriKind.RelativeOrAbsolute);
+                Uri fileUri = new Uri(FileProvider.GetFileInfo("App_Data/Support.json").PhysicalPath, UriKind.RelativeOrAbsolute);
                 JsonSourceConnectionParameters jsonParams = new JsonSourceConnectionParameters();
                 jsonParams.JsonSource = new UriJsonSource(fileUri);
                 e.ConnectionParameters = jsonParams;
